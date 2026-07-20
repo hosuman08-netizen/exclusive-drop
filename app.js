@@ -43,7 +43,7 @@
     document.getElementById('claim').onclick=function(){
       if(credits<2){document.getElementById('log').textContent='크레딧 부족 · 무료+2 또는 후원';try{legionTrack('money_pipe_shown',{app:'drop',empty:1})}catch(e){}return;}
       credits-=2;save();var n=Math.floor(Math.random()*900+100); var c=+(localStorage.getItem('ed_claimed')||0)+1; localStorage.setItem('ed_claimed',c);
-      lastDrop='드롭 #'+n+' · 누적 '+c+'회'; bumpStreak(); render();
+      lastDrop='드롭 #'+n+' · 누적 '+c+'회 · 정진'; bumpStreak(); render();
       document.getElementById('sharePeak').style.display='block';
       try{legionTrack('activate',{})}catch(e){} try{legionTrack('share_peak_shown',{})}catch(e){} try{legionTrack('money_pipe_shown',{app:'drop'})}catch(e){}
     };
