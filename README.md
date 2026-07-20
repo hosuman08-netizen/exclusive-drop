@@ -4,3 +4,6 @@
 - Pitch: 성인 크리에이터 한정 드롭·멤버십 룸.
 - Format: web mini-app / TG-ready
 - Guards: age gate mandatory · no minors · platform ToS · fictional where noted
+
+## LEARNED 2026-07-21 parallel
+- PWA sw shell · always-learning stamp · fleet parallel wave
