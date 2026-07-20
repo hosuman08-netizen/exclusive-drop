@@ -79,3 +79,5 @@
   try{legionTrack('session_start',{})}catch(e){}
   render(); setInterval(function(){var el=document.getElementById('cd'); if(el)el.textContent=left();},1000);
 })();
+
+/* LEGION_WAVE_30_pipe_ensure */ /* pipe already present wave 30 */
