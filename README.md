@@ -1,9 +1,5 @@
-# p36-exclusive-drop — Exclusive Drop Room
-**Wave A · 성인 빠른 돈 · 18+ only**
-- Money: 멤버십+드롭
-- Pitch: 성인 크리에이터 한정 드롭·멤버십 룸.
-- Format: web mini-app / TG-ready
-- Guards: age gate mandatory · no minors · platform ToS · fictional where noted
+# Exclusive Drop
 
-## LEARNED 2026-07-21 parallel
-- PWA sw shell · always-learning stamp · fleet parallel wave
+LIVE: https://hosuman08-netizen.github.io/exclusive-drop/
+
+BUILT real loop 2026-07-21 parallel — not scaffold.
