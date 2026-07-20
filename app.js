@@ -10,7 +10,7 @@
       +'<button id="claim">드롭 수령 (-2)</button><button class="sec" id="free">무료 +2 (일1)</button><div id="log" class="sub" style="margin-top:8px"></div></div>';
     document.getElementById('claim').onclick=function(){
       if(credits<2){document.getElementById('log').textContent='크레딧 부족';return;}
-      credits-=2;save();document.getElementById('log').textContent='드롭 수령 · 가상 아이템 #'+Math.floor(Math.random()*900+100);
+      credits-=2;save();var n=Math.floor(Math.random()*900+100); var c=+(localStorage.getItem('ed_claimed')||0)+1; localStorage.setItem('ed_claimed',c); document.getElementById('log').textContent='드롭 #'+n+' · 누적 '+c+'회';
       render();try{legionTrack('activate',{})}catch(e){}
     };
     document.getElementById('free').onclick=function(){
