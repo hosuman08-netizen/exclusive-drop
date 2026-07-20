@@ -7,6 +7,17 @@
   function dayKey(off){var d=new Date();d.setDate(d.getDate()+(off||0));return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   function kId(){try{var id=localStorage.getItem('ed_k_id');if(!id){id='e'+Math.random().toString(36).slice(2,8);localStorage.setItem('ed_k_id',id);}return id;}catch(e){return 'share';}}
   function shareUrl(){return SHARE_BASE+'?utm_source=share&utm_medium=app&ref='+encodeURIComponent(kId());}
+  function hist(){try{return JSON.parse(localStorage.getItem('ed_hist')||'[]');}catch(e){return[];}}
+  function pushHist(n){
+    try{
+      var h=hist(); h.unshift({n:n,t:Date.now(),d:dayKey(0)});
+      localStorage.setItem('ed_hist',JSON.stringify(h.slice(0,10)));
+      var best=+(localStorage.getItem('ed_best')||0);
+      if(n>best) localStorage.setItem('ed_best',String(n));
+    }catch(e){}
+  }
+  function todayClaims(){try{return +(localStorage.getItem('ed_day_'+dayKey(0))||0);}catch(e){return 0;}}
+  function bumpToday(){try{localStorage.setItem('ed_day_'+dayKey(0),String(todayClaims()+1));}catch(e){}}
   function bumpStreak(){
     try{
       var st=JSON.parse(localStorage.getItem('ed_streak')||'{}');
@@ -29,11 +40,15 @@
     var st=JSON.parse(localStorage.getItem('ed_streak')||'{}');
     var sc=st.count||0;
     var ready=!st.shieldLast||((new Date(dayKey(0))-new Date(st.shieldLast))/86400000)>=7;
+    var h=hist();
+    var best=+(localStorage.getItem('ed_best')||0);
     root.innerHTML='<div class="card" style="border-color:#f472b6"><b>18+</b> Fictional drop · 실결제 아님</div>'
       +'<div class="card">크레딧 <b style="color:var(--gold)">'+credits+'</b> · 🔥 '+sc+'일'+(sc>=3&&ready?' · 🛡️':'')
+      +' · 오늘 '+todayClaims()+'회'+(best?' · best #'+best:'')
       +'<div style="font-size:28px;margin:10px 0" id="cd">'+left()+'</div>'
       +'<button id="claim">드롭 수령 (-2)</button><button class="sec" id="free">무료 +2 (일1)</button>'
       +'<div id="log" class="sub" style="margin-top:8px">'+(lastDrop||'첫 드롭을 수령하세요')+'</div>'
+      +(h.length?'<div class="sub" style="margin-top:8px">최근: '+h.slice(0,5).map(function(x){return '#'+x.n;}).join(' · ')+'</div>':'')
       +'<div id="sharePeak" style="display:none;margin-top:10px;padding:10px;border:1px solid #f472b644;border-radius:12px"><button class="sec" id="shareBtn">📤 드롭 공유</button></div>'
       +'<div id="moneyPipe" style="margin-top:12px;padding:10px;border:1px solid #c5a46e44;border-radius:12px;background:#16121c;text-align:center;font-size:12px">'
       +'<div style="color:#e0b552;font-weight:700;margin-bottom:4px">💎 크레딧 · 후원 (18+ 엔터)</div>'
@@ -43,6 +58,7 @@
     document.getElementById('claim').onclick=function(){
       if(credits<2){document.getElementById('log').textContent='크레딧 부족 · 무료+2 또는 후원';try{legionTrack('money_pipe_shown',{app:'drop',empty:1})}catch(e){}return;}
       credits-=2;save();var n=Math.floor(Math.random()*900+100); var c=+(localStorage.getItem('ed_claimed')||0)+1; localStorage.setItem('ed_claimed',c);
+      pushHist(n); bumpToday();
       lastDrop='드롭 #'+n+' · 누적 '+c+'회 · 정진'; bumpStreak(); render();
       document.getElementById('sharePeak').style.display='block';
       try{legionTrack('activate',{})}catch(e){} try{legionTrack('share_peak_shown',{})}catch(e){} try{legionTrack('money_pipe_shown',{app:'drop'})}catch(e){}
