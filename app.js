@@ -3,6 +3,23 @@
   var root=document.getElementById('app');
   var SHARE_BASE='https://hosuman08-netizen.github.io/exclusive-drop/';
   var lastDrop='';
+  /* GOLD50 TOP1: SNKRS/Confirmed — named drop of the day. Local 7-name rotate. 실재화 링크 0 */
+  var DROPS=[
+    {name:'Veil No.7', tag:'심야 캡슐'},
+    {name:'Ash Circuit', tag:'재 회로'},
+    {name:'Lumen Archive', tag:'빛 기록'},
+    {name:'Night Ledger', tag:'야간 장부'},
+    {name:'Hollow Key', tag:'빈 열쇠'},
+    {name:'Echo Capsule', tag:'메아리 캡슐'},
+    {name:'Velvet Stamp', tag:'벨벳 각인'}
+  ];
+  function todayDrop(){
+    var y=new Date().getFullYear();
+    var start=new Date(y,0,0);
+    var idx=Math.floor((Date.now()-start.getTime())/86400000)%DROPS.length;
+    if(idx<0) idx=0;
+    return DROPS[idx];
+  }
   function save(){localStorage.setItem('exclusive-drop_cr',credits);}
   function dayKey(off){var d=new Date();d.setDate(d.getDate()+(off||0));return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   function kId(){try{var id=localStorage.getItem('ed_k_id');if(!id){id='e'+Math.random().toString(36).slice(2,8);localStorage.setItem('ed_k_id',id);}return id;}catch(e){return 'share';}}
@@ -25,6 +42,13 @@
   }
   function todayClaims(){try{return +(localStorage.getItem('ed_day_'+dayKey(0))||0);}catch(e){return 0;}}
   function bumpToday(){try{localStorage.setItem('ed_day_'+dayKey(0),String(todayClaims()+1));}catch(e){}}
+  /* GOLD50 TOP2: SNKRS Verified Fan — streak N = member window chip. 실자격 0. 수령 잠금 없음 */
+  function memberTier(sc){
+    sc=sc||0;
+    if(sc>=7) return {t:'시즌 멤버', open:1, need:0};
+    if(sc>=3) return {t:'멤버 창', open:1, need:0};
+    return {t:'게스트', open:0, need:Math.max(0,3-sc)};
+  }
   function bumpStreak(){
     try{
       var st=JSON.parse(localStorage.getItem('ed_streak')||'{}');
@@ -50,20 +74,29 @@
     var c=+(localStorage.getItem('ed_claimed')||0)+1; localStorage.setItem('ed_claimed',c);
     pushHist(n); bumpToday();
     var r=rarityOf(n);
-    lastDrop='드롭 #'+n+' · '+r.t+' · 누적 '+c+'회';
+    lastDrop=todayDrop().name+' #'+n+' · '+r.t+' · 누적 '+c+'회';
     return {n:n,r:r,c:c};
   }
   function render(){
     var st=JSON.parse(localStorage.getItem('ed_streak')||'{}');
     var sc=st.count||0;
     var ready=!st.shieldLast||((new Date(dayKey(0))-new Date(st.shieldLast))/86400000)>=7;
+    var mem=memberTier(sc);
     var h=hist();
     var best=+(localStorage.getItem('ed_best')||0);
     var myth=h.filter(function(x){return x.r==='MYTH';}).length;
     root.innerHTML='<div class="card" style="border-color:#f472b6"><b>18+</b> Fictional drop · 실결제 아님 · 번호 기반 희귀도 표시(연출)</div>'
       +'<div class="card">크레딧 <b style="color:var(--gold)">'+credits+'</b> · 🔥 '+sc+'일'+(sc>=3&&ready?' · 🛡️':'')
       +' · 오늘 '+todayClaims()+'회'+(best?' · best #'+best:'')+(myth?' · MYTH '+myth:'')
-      +'<div style="font-size:28px;margin:10px 0" id="cd">'+left()+'</div>'
+      +'<div style="margin:8px 0 0">'
+      +'<span class="chip '+(mem.open?'mem':'guest')+'">'+(mem.open?'OPEN ':'')+mem.t+'</span>'
+      +(mem.open?'':'<span class="chip">멤버 창 '+sc+'/3일</span>')
+      +'</div>'
+      +'<p class="sub" style="margin:6px 0 0">멤버 창=로컬 스트릭 연출 · 실자격/실재화 0 · 수령 잠금 없음</p>'
+      +'<div class="sub" style="margin:8px 0 0;letter-spacing:.08em;font-size:11px">TODAY DROP · 로컬 7로테 · 실재화 링크 없음</div>'
+      +'<div style="font-size:22px;font-weight:800;margin:4px 0 2px;color:var(--gold)">'+todayDrop().name+'</div>'
+      +'<div class="sub" style="margin:0 0 6px">'+todayDrop().tag+' · 자정 마감</div>'
+      +'<div style="font-size:28px;margin:6px 0 10px;font-variant-numeric:tabular-nums" id="cd">'+left()+'</div>'
       +'<p class="sub">희귀도: COMMON&lt;400 · UNCOMMON 400+ · RARE 700+ · MYTH 900+ (가상 연출, 확률 고지 아님)</p>'
       +'<button id="claim">드롭 수령 (-2)</button><button class="sec" id="claim3">3연 (-6)</button><button class="sec" id="free">무료 +2 (일1)</button>'
       +'<div id="log" class="sub" style="margin-top:8px">'+(lastDrop||'첫 드롭을 수령하세요')+'</div>'
