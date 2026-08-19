@@ -18,16 +18,20 @@
       +'<div style="font-size:56px;font-weight:800;line-height:1;color:'+c+';font-variant-numeric:tabular-nums">#'+last.n+'</div>'
       +'<div style="margin:8px 0 2px;font-size:13px;font-weight:800;color:'+c+'">'+(last.r.t||'')+'</div>'
       +'<div class="sub" style="margin:0 0 10px">'+(last.name||todayDrop().name)+' · 세트완성 없음</div>'
+      +'<p class="sub" id="shareCopyLine" style="margin:0 0 10px;color:#ece8f1;font-size:12px;line-height:1.4">'+cardCopyLine(last)+'</p>'
       +'<div class="row" style="justify-content:center"><button class="sec" id="copyCard">📋 카드 카피</button><button class="sec" id="shareBtn">📤 드롭 카드 공유</button></div></div>';
   }
-  /* GOLD50 TOP5 next: 1-tap card copy. fake% 0. 컴프/세트완성 0 */
-  function cardCopyText(last){
+  /* GOLD50 5 closed · WAVE110 TTV: 공유카피 1줄. fake% 0. 컴프/세트완성 0 */
+  function cardCopyLine(last){
     last=last||lastClaim();
-    if(!last||!last.r) return 'Exclusive Drop (fictional 18+)\n연출 · 확률 고지 아님 · 세트완성 없음\n'+shareUrl();
+    if(!last||!last.r) return 'Exclusive Drop (fictional 18+) · 연출 · 확률고지 아님 · 세트완성 없음';
     return 'Exclusive Drop · '+(last.name||todayDrop().name)
-      +'\n#'+last.n+' '+(last.r.t||'')
-      +'\n연출 티어 · 확률 고지 아님 · 세트완성 없음'
-      +'\n(fictional 18+)\n'+shareUrl();
+      +' · #'+last.n+' '+(last.r.t||'')
+      +' · 연출 · 확률고지 아님 · 세트완성 없음 · fictional 18+';
+  }
+  /* GOLD50 TOP5: 1-tap card copy. fake% 0. 컴프/세트완성 0 */
+  function cardCopyText(last){
+    return cardCopyLine(last)+'\n'+shareUrl();
   }
   /* GOLD50 TOP1: SNKRS/Confirmed — named drop of the day. Local 7-name rotate. 실재화 링크 0 */
   var DROPS=[
