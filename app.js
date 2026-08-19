@@ -13,12 +13,29 @@
     {name:'Echo Capsule', tag:'메아리 캡슐'},
     {name:'Velvet Stamp', tag:'벨벳 각인'}
   ];
-  function todayDrop(){
+  function dropIndex(off){
     var y=new Date().getFullYear();
     var start=new Date(y,0,0);
-    var idx=Math.floor((Date.now()-start.getTime())/86400000)%DROPS.length;
+    var d=new Date(); d.setDate(d.getDate()+(off||0));
+    var idx=Math.floor((d.getTime()-start.getTime())/86400000)%DROPS.length;
     if(idx<0) idx=0;
-    return DROPS[idx];
+    return idx;
+  }
+  function dropAt(off){return DROPS[dropIndex(off)];}
+  function todayDrop(){return dropAt(0);}
+  function calLabel(off){
+    var d=new Date(); d.setDate(d.getDate()+off);
+    return (d.getMonth()+1)+'/'+d.getDate();
+  }
+  /* GOLD50 TOP3: Sole Retriever 다음 3일 드롭명. 로컬 배열. 컴프/실재화 0 */
+  function cal3Html(){
+    return [1,2,3].map(function(off){
+      var drop=dropAt(off);
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #2a2438">'
+        +'<div><div style="font-size:13px">'+drop.name+'</div>'
+        +'<div class="sub" style="margin:2px 0 0">'+drop.tag+' · 로컬 로테</div></div>'
+        +'<span class="chip">'+calLabel(off)+'</span></div>';
+    }).join('');
   }
   function save(){localStorage.setItem('exclusive-drop_cr',credits);}
   function dayKey(off){var d=new Date();d.setDate(d.getDate()+(off||0));return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -97,6 +114,9 @@
       +'<div style="font-size:22px;font-weight:800;margin:4px 0 2px;color:var(--gold)">'+todayDrop().name+'</div>'
       +'<div class="sub" style="margin:0 0 6px">'+todayDrop().tag+' · 자정 마감</div>'
       +'<div style="font-size:28px;margin:6px 0 10px;font-variant-numeric:tabular-nums" id="cd">'+left()+'</div>'
+      +'<div id="dropCal"><b>다음 3일</b> <span class="chip">로컬 캘린더</span>'
+      +'<p class="sub" style="margin:6px 0 2px">이름만 · 실재화 0 · 세트완성 없음</p>'
+      +cal3Html()+'</div>'
       +'<p class="sub">희귀도: COMMON&lt;400 · UNCOMMON 400+ · RARE 700+ · MYTH 900+ (가상 연출, 확률 고지 아님)</p>'
       +'<button id="claim">드롭 수령 (-2)</button><button class="sec" id="claim3">3연 (-6)</button><button class="sec" id="free">무료 +2 (일1)</button>'
       +'<div id="log" class="sub" style="margin-top:8px">'+(lastDrop||'첫 드롭을 수령하세요')+'</div>'
