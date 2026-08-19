@@ -20,7 +20,7 @@
       +'<div class="sub" style="margin:0 0 10px">'+(last.name||todayDrop().name)+' · 세트완성 없음</div>'
       +'<p class="sub" id="shareCopyLine" style="margin:0 0 10px;color:#ece8f1;font-size:12px;line-height:1.4">'+cardCopyLine(last)+'</p>'
       +'<div class="row" style="justify-content:center"><button class="sec" id="copyCard">📋 카드 카피</button><button class="sec" id="shareBtn">📤 드롭 카드 공유</button></div>'
-      +'<p class="sub" id="shareCopyOk" hidden data-ok="0" style="margin:8px 0 0"></p></div>';
+      +'<p class="sub" id="shareCopyOk" hidden data-ok="0" data-tap-hide="1" data-hidden="1" role="button" tabindex="0" style="margin:8px 0 0;cursor:pointer"></p></div>';
   }
   /* GOLD50 5 closed · WAVE110 TTV: 공유카피 1줄. fake% 0. 컴프/세트완성 0 */
   function cardCopyLine(last){
@@ -47,12 +47,38 @@
     if(!el) return false;
     el.textContent='';
     el.setAttribute('data-ok','0');
+    el.setAttribute('data-hidden','1');
     el.setAttribute('hidden','');
     return true;
   }
   function armShareCopyOkHide(){
     if(shareCopyOkHideTimer){ clearTimeout(shareCopyOkHideTimer); shareCopyOkHideTimer=null; }
     shareCopyOkHideTimer=setTimeout(hideShareCopyOk, SHARE_COPY_OK_HIDE_MS);
+  }
+  /* WAVE210: 확인줄 탭=즉시숨김. 3s 타이머 유지. kompu 0. fake% 0 */
+  function bindShareCopyOkTap(){
+    var el=document.getElementById('shareCopyOk');
+    if(!el) return false;
+    try{ el.setAttribute('role','button'); }catch(e0){}
+    try{ el.tabIndex=0; }catch(e1){}
+    try{ el.style.cursor='pointer'; }catch(e2){}
+    try{ el.setAttribute('data-tap-hide','1'); }catch(e3){}
+    el.title='탭=확인줄 즉시숨김 · 확률고지 아님 · 세트완성 없음';
+    el.onclick=function(ev){
+      if(ev&&ev.stopPropagation) ev.stopPropagation();
+      if(shareCopyOkHideTimer){
+        try{ clearTimeout(shareCopyOkHideTimer); }catch(e4){}
+        shareCopyOkHideTimer=null;
+      }
+      hideShareCopyOk();
+    };
+    el.onkeydown=function(ev){
+      var k=ev&&ev.key;
+      if(k!=='Enter'&&k!==' ') return;
+      if(ev.preventDefault) ev.preventDefault();
+      el.onclick(ev);
+    };
+    return true;
   }
   function paintShareCopyOk(copied){
     var el=document.getElementById('shareCopyOk');
@@ -62,9 +88,12 @@
     el.setAttribute('data-ok', copied?'1':'0');
     if(line){
       el.removeAttribute('hidden');
+      el.setAttribute('data-hidden','0');
       armShareCopyOkHide();
+      bindShareCopyOkTap();
     }else{
       el.setAttribute('hidden','');
+      el.setAttribute('data-hidden','1');
       if(shareCopyOkHideTimer){ clearTimeout(shareCopyOkHideTimer); shareCopyOkHideTimer=null; }
     }
     return line;
