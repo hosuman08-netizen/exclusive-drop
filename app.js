@@ -3,6 +3,23 @@
   var root=document.getElementById('app');
   var SHARE_BASE='https://hosuman08-netizen.github.io/exclusive-drop/';
   var lastDrop='';
+  /* GOLD50 TOP4: Whatnot/SNKRS share card — big rarity number. persist last pull. 컴프/가짜% 0 */
+  function lastClaim(){try{return JSON.parse(localStorage.getItem('ed_last')||'null');}catch(e){return null;}}
+  function setLastClaim(res){
+    if(!res) return;
+    try{localStorage.setItem('ed_last',JSON.stringify({n:res.n,r:res.r,name:todayDrop().name,t:Date.now()}));}catch(e){}
+  }
+  function shareCardHtml(){
+    var last=lastClaim();
+    if(!last||!last.r) return '';
+    var c=last.r.c||'#94a3b8';
+    return '<div id="sharePeak" style="margin-top:12px;padding:16px 14px;border:1px solid '+c+'66;border-radius:16px;background:linear-gradient(180deg,'+c+'22,#15131d);text-align:center">'
+      +'<div class="sub" style="margin:0 0 6px;letter-spacing:.12em">DROP CARD · 연출 · 확률고지 아님</div>'
+      +'<div style="font-size:56px;font-weight:800;line-height:1;color:'+c+';font-variant-numeric:tabular-nums">#'+last.n+'</div>'
+      +'<div style="margin:8px 0 2px;font-size:13px;font-weight:800;color:'+c+'">'+(last.r.t||'')+'</div>'
+      +'<div class="sub" style="margin:0 0 10px">'+(last.name||todayDrop().name)+' · 세트완성 없음</div>'
+      +'<button class="sec" id="shareBtn">📤 드롭 카드 공유</button></div>';
+  }
   /* GOLD50 TOP1: SNKRS/Confirmed — named drop of the day. Local 7-name rotate. 실재화 링크 0 */
   var DROPS=[
     {name:'Veil No.7', tag:'심야 캡슐'},
@@ -92,7 +109,9 @@
     pushHist(n); bumpToday();
     var r=rarityOf(n);
     lastDrop=todayDrop().name+' #'+n+' · '+r.t+' · 누적 '+c+'회';
-    return {n:n,r:r,c:c};
+    var res={n:n,r:r,c:c};
+    setLastClaim(res);
+    return res;
   }
   function render(){
     var st=JSON.parse(localStorage.getItem('ed_streak')||'{}');
@@ -121,7 +140,7 @@
       +'<button id="claim">드롭 수령 (-2)</button><button class="sec" id="claim3">3연 (-6)</button><button class="sec" id="free">무료 +2 (일1)</button>'
       +'<div id="log" class="sub" style="margin-top:8px">'+(lastDrop||'첫 드롭을 수령하세요')+'</div>'
       +(h.length?'<div class="sub" style="margin-top:8px">최근: '+h.slice(0,5).map(function(x){return '<span style="color:'+(rarityOf(x.n).c)+'">#'+x.n+' '+(x.r||'')+'</span>';}).join(' · ')+'</div>':'')
-      +'<div id="sharePeak" style="display:none;margin-top:10px;padding:10px;border:1px solid #f472b644;border-radius:12px"><button class="sec" id="shareBtn">📤 드롭 공유</button></div>'
+      +shareCardHtml()
       +'<div id="moneyPipe" style="margin-top:12px;padding:10px;border:1px solid #c5a46e44;border-radius:12px;background:#16121c;text-align:center;font-size:12px">'
       +'<div style="color:#e0b552;font-weight:700;margin-bottom:4px">💎 크레딧 · 후원 (18+ 엔터)</div>'
       +'<a style="color:#ece8f1;margin:0 6px" href="mailto:hoyashi95@gmail.com?subject=%5BDrop%5D%20support">☕ 후원</a>'
@@ -130,15 +149,15 @@
     document.getElementById('claim').onclick=function(){
       var res=doClaim(); if(!res)return;
       bumpStreak(); render();
-      document.getElementById('sharePeak').style.display='block';
       try{legionTrack('activate',{r:res.r.t})}catch(e){} try{legionTrack('share_peak_shown',{})}catch(e){} try{legionTrack('money_pipe_shown',{app:'drop'})}catch(e){}
     };
     document.getElementById('claim3').onclick=function(){
       if(credits<6){document.getElementById('log').textContent='3연은 크레딧 6 필요';return;}
-      var got=[]; for(var i=0;i<3;i++){ var res=doClaim(); if(res) got.push('#'+res.n+' '+res.r.t); }
+      var got=[], best=null;
+      for(var i=0;i<3;i++){ var res=doClaim(); if(res){ got.push('#'+res.n+' '+res.r.t); if(!best||res.n>best.n) best=res; } }
+      if(best) setLastClaim(best);
       bumpStreak(); render();
       document.getElementById('log').textContent='3연: '+got.join(' · ');
-      document.getElementById('sharePeak').style.display='block';
       try{legionTrack('activate',{multi:3})}catch(e){}
     };
     document.getElementById('free').onclick=function(){
