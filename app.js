@@ -19,7 +19,8 @@
       +'<div style="margin:8px 0 2px;font-size:13px;font-weight:800;color:'+c+'">'+(last.r.t||'')+'</div>'
       +'<div class="sub" style="margin:0 0 10px">'+(last.name||todayDrop().name)+' · 세트완성 없음</div>'
       +'<p class="sub" id="shareCopyLine" style="margin:0 0 10px;color:#ece8f1;font-size:12px;line-height:1.4">'+cardCopyLine(last)+'</p>'
-      +'<div class="row" style="justify-content:center"><button class="sec" id="copyCard">📋 카드 카피</button><button class="sec" id="shareBtn">📤 드롭 카드 공유</button></div></div>';
+      +'<div class="row" style="justify-content:center"><button class="sec" id="copyCard">📋 카드 카피</button><button class="sec" id="shareBtn">📤 드롭 카드 공유</button></div>'
+      +'<p class="sub" id="shareCopyOk" hidden data-ok="0" style="margin:8px 0 0"></p></div>';
   }
   /* GOLD50 5 closed · WAVE110 TTV: 공유카피 1줄. fake% 0. 컴프/세트완성 0 */
   function cardCopyLine(last){
@@ -32,6 +33,41 @@
   /* GOLD50 TOP5: 1-tap card copy. fake% 0. 컴프/세트완성 0 */
   function cardCopyText(last){
     return cardCopyLine(last)+'\n'+shareUrl();
+  }
+  /* WAVE159 TTV: 복사 후 확인 1줄 3초숨김. kompu 0. fake% 0 */
+  var SHARE_COPY_OK_HIDE_MS=3000;
+  var shareCopyOkHideTimer=null;
+  function shareCopyOkHideMs(){ return SHARE_COPY_OK_HIDE_MS; }
+  function shareCopyOkLine(copied){
+    return copied ? '복사 확인 · 확률고지 아님 · 세트완성 없음 · fictional 18+' : '';
+  }
+  function hideShareCopyOk(){
+    shareCopyOkHideTimer=null;
+    var el=document.getElementById('shareCopyOk');
+    if(!el) return false;
+    el.textContent='';
+    el.setAttribute('data-ok','0');
+    el.setAttribute('hidden','');
+    return true;
+  }
+  function armShareCopyOkHide(){
+    if(shareCopyOkHideTimer){ clearTimeout(shareCopyOkHideTimer); shareCopyOkHideTimer=null; }
+    shareCopyOkHideTimer=setTimeout(hideShareCopyOk, SHARE_COPY_OK_HIDE_MS);
+  }
+  function paintShareCopyOk(copied){
+    var el=document.getElementById('shareCopyOk');
+    if(!el) return '';
+    var line=shareCopyOkLine(copied);
+    el.textContent=line;
+    el.setAttribute('data-ok', copied?'1':'0');
+    if(line){
+      el.removeAttribute('hidden');
+      armShareCopyOkHide();
+    }else{
+      el.setAttribute('hidden','');
+      if(shareCopyOkHideTimer){ clearTimeout(shareCopyOkHideTimer); shareCopyOkHideTimer=null; }
+    }
+    return line;
   }
   /* GOLD50 TOP1: SNKRS/Confirmed — named drop of the day. Local 7-name rotate. 실재화 링크 0 */
   var DROPS=[
@@ -182,6 +218,7 @@
       var text=cardCopyText();
       if(navigator.clipboard)navigator.clipboard.writeText(text);
       document.getElementById('log').textContent='카드 카피됨 · 확률 고지 아님 · 세트완성 없음';
+      paintShareCopyOk(true);
       try{legionTrack('share_peak',{copy:1})}catch(e){}
     };
     var sb=document.getElementById('shareBtn');
