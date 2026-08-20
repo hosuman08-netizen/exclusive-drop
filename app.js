@@ -20,7 +20,7 @@
       +'<div class="sub" style="margin:0 0 10px">'+(last.name||todayDrop().name)+' · 세트완성 없음</div>'
       +'<p class="sub" id="shareCopyLine" style="margin:0 0 10px;color:#ece8f1;font-size:12px;line-height:1.4">'+cardCopyLine(last)+'</p>'
       +'<div class="row" style="justify-content:center"><button class="sec" id="copyCard">📋 카드 카피</button><button class="sec" id="shareBtn">📤 드롭 카드 공유</button></div>'
-      +'<p class="sub" id="shareCopyOk" hidden data-ok="0" data-tap-hide="1" data-hidden="1" role="button" tabindex="0" style="margin:8px 0 0;cursor:pointer"></p></div>';
+      +'</div>';
   }
   /* GOLD50 5 closed · WAVE110 TTV: 공유카피 1줄. fake% 0. 컴프/세트완성 0 */
   function cardCopyLine(last){
@@ -223,7 +223,7 @@
       +'<div style="color:#e0b552;font-weight:700;margin-bottom:4px">💎 크레딧 · 후원 (18+ 엔터)</div>'
       +'<a style="color:#ece8f1;margin:0 6px" href="mailto:hoyashi95@gmail.com?subject=%5BDrop%5D%20support">☕ 후원</a>'
       +'<a style="color:#ece8f1;margin:0 6px" href="https://hosuman08-netizen.github.io/soft-paywall/?utm_source=drop&utm_medium=pipe">🔒 Soft Paywall</a>'
-      +'<a style="color:#e0b552;margin:0 6px" href="https://hosuman08-netizen.github.io/legion-hub/?utm_source=drop&utm_medium=pipe">🎮 Arcade</a></div></div>';
+      +'</div></div>';
     document.getElementById('claim').onclick=function(){
       var res=doClaim(); if(!res)return;
       bumpStreak(); render();
